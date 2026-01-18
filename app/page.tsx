@@ -19,6 +19,9 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || ""
+const withBase = (path: string) => `${BASE_PATH}${path}`
+
 type TabType = "skills" | "experience" | "education" | "certifications" | "language"
 
 // Skills data organized by category
@@ -633,7 +636,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     // Initialize audio
-    audioRef.current = new Audio("/audio/background-music.mp3")
+    audioRef.current = new Audio(withBase("/audio/background-music.mp3"))
     audioRef.current.loop = true
     audioRef.current.volume = 0.3
 
@@ -790,7 +793,7 @@ export default function Portfolio() {
               </a>
 
               <a
-                href="/cv/Ignatius_Harry_CV.pdf"
+                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
                 download
                 className={`px-8 py-3 rounded-full font-medium ${isDark ? "bg-white text-slate-900 hover:bg-slate-100" : "bg-slate-900 text-white hover:bg-slate-800"} transition-colors flex items-center gap-2`}
               >
