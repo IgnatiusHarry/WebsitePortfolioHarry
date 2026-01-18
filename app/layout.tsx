@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   title: 'Ignatius Harry | Portfolio',
   description: 'Data Analyst & Computational Social Science Researcher with experience across Taiwan, Singapore, and Indonesia. Specialized in ETL/ELT pipelines, machine learning, NLP, and econometrics.',
   generator: 'v0.app',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   icons: {
     icon: [
       {

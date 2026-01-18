@@ -196,6 +196,39 @@
   }
 }
 
+/* Mobile responsiveness improvements */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+  
+  /* Prevent text overflow */
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Smooth zoom behavior */
+@media (min-width: 641px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Ensure proper scaling on all devices */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 /* Typing animation keyframes */
 @keyframes typing {
   from {
