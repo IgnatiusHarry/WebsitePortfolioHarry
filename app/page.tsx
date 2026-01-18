@@ -1,4 +1,7 @@
-"use client"
+"use client";
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const withBase = (path: string) => `${BASE_PATH}${path}`;
 
 import { useState, useEffect, useRef } from "react"
 import {
@@ -276,7 +279,7 @@ const projectsData = [
     description:
       "LLM-powered analysis studying the causal relationship between Trump's social media posts and Bitcoin returns during the 2024 U.S. Presidential Election.",
     icon: "📊",
-    image: "/images/trump-bitcoin-thesis.jpg",
+    image: `${basePath}/images/trump-bitcoin-thesis.jpg`,
     gradient: "from-sky-500/20 to-violet-500/20",
     links: [
       {
@@ -294,7 +297,7 @@ const projectsData = [
   description:
     "Spatial panel data analysis examining how foreign and domestic tourism affect regional economic performance and unemployment across 34 Indonesian provinces (2018–2020).",
   icon: "🗺️",
-  image: "/images/Portfolio LPF.png",
+  image: withBase("/images/Portfolio LPF.png"),
   gradient: "from-emerald-500/20 to-sky-500/20",
   highlights: [
     "Foreign tourism significantly increases GRDP and reduces unemployment",
@@ -333,7 +336,7 @@ const projectsData = [
     description:
       "Investigated the relationship between suicide rates and various proxies of 'Social Capital loss' in the United States from 2000 to 2022. The breakdown of society in the West, marked by rising rates of racism, hate speech, and discrimination, has been accompanied by an increase in suicide rates.",
     icon: "📊",
-    image: "/images/Social Capital and Suicide in the United States.png",
+    image: withBase("/images/Social Capital and Suicide in the United States.png"),
     gradient: "from-sky-500/20 to-violet-500/20",
     links: [
     {
@@ -351,7 +354,7 @@ const projectsData = [
     description:
       "Analyzed changes in Taiwan's political alignment by comparing the partisan characteristics of electoral regions in the 2000 and 2024 presidential elections. This analysis will include aggregating vote counts at the district level, calculating vote share percentages, and examining the correlation between vote shares across the tw",
     icon: "📊",
-    image: "/images/Screenshot 2026-01-18 at 23.56.52.png",
+    image: withBase("/images/Screenshot 2026-01-18 at 23.56.52.png"),
     gradient: "from-sky-500/20 to-violet-500/20",
     links: [
       {
@@ -413,8 +416,8 @@ function SkillIcon({ name, isDark }: { name: string; isDark: boolean }) {
         className="w-12 h-12 rounded-xl flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 relative"
         title={name}
       >
-        <Image
-          src={`/images/${logoFile}`}
+          <Image
+          src={withBase(`/images/${logoFile}`)}
           alt={name}
           fill
           className="object-contain p-1"
@@ -678,7 +681,7 @@ export default function Portfolio() {
       {/* Background with Taiwan cityscape image */}
       <div className="fixed inset-0 pointer-events-none">
         <Image
-          src="/images/taiwan-cityscape.jpg"
+          src={`${basePath}/images/taiwan-cityscape.jpg`} />
           alt="Taiwan cityscape"
           fill
           className="object-cover"
@@ -793,7 +796,7 @@ export default function Portfolio() {
               </a>
 
               <a
-                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
+                href={`${basePath}/cv/Ignatius_Harry_CV.pdf`}
                 download
                 className={`px-8 py-3 rounded-full font-medium ${isDark ? "bg-white text-slate-900 hover:bg-slate-100" : "bg-slate-900 text-white hover:bg-slate-800"} transition-colors flex items-center gap-2`}
               >
@@ -883,7 +886,7 @@ export default function Portfolio() {
                 <div className={`absolute -inset-1 ${isDark ? "bg-gradient-to-br from-sky-500/20 to-transparent" : "bg-gradient-to-br from-sky-300/30 to-transparent"} rounded-2xl blur-sm`} />
                 <div className={`relative w-72 h-96 md:w-80 md:h-[420px] rounded-2xl overflow-hidden border ${isDark ? "border-slate-700/50" : "border-slate-200"}`}>
                   <Image
-                    src="/images/profile-photo.jpg"
+                    src={`${basePath}/images/profile-photo.jpg`} />
                     alt="Ignatius Harry - Data Analyst"
                     fill
                     className="object-cover"
