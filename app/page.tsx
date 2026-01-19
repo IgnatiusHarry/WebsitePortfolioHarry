@@ -1904,10 +1904,7 @@ export default function Portfolio() {
                 {t("Send a Message", "傳送訊息")}
               </h3>
 
-              <form className="space-y-4" onSubmit={(e) => {
-                e.preventDefault()
-                alert(t("Thank you for your message! I'll get back to you soon.", "感謝您的訊息！我會盡快回覆。"))
-              }}>
+              <form action="https://formspree.io/f/xreekpgb" method="POST" className="space-y-4">
                 {/* Name Input */}
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
@@ -1915,6 +1912,7 @@ export default function Portfolio() {
                   </label>
                   <input
                     type="text"
+                    name="name"
                     placeholder={t("Your Name", "您的名字")}
                     className={`w-full px-4 py-3 rounded-lg border transition-all ${
                       isDark
@@ -1932,6 +1930,7 @@ export default function Portfolio() {
                   </label>
                   <input
                     type="email"
+                    name="email"
                     placeholder={t("your@email.com", "your@email.com")}
                     className={`w-full px-4 py-3 rounded-lg border transition-all ${
                       isDark
@@ -1948,6 +1947,7 @@ export default function Portfolio() {
                     {t("Your Message", "您的訊息")}
                   </label>
                   <textarea
+                    name="message"
                     placeholder={t("Hello, I'd like to talk about...", "嗨，我想討論...")}
                     rows={4}
                     className={`w-full px-4 py-3 rounded-lg border transition-all resize-none ${
