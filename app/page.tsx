@@ -217,7 +217,7 @@ const experienceData = [
     tags: ["Python", "Machine Learning", "NLP", "LLM", "RAG"],
   },
   {
-    title: "Market Analyst Intern",
+    title: "Market Analyst",
     company: "The Economist Group: Clearstate",
     period: "Nov 2024 - March 2025",
     location: "Singapore",
@@ -296,7 +296,7 @@ const experienceDataZh = [
     tags: ["Python", "機器學習", "NLP", "LLM", "RAG"],
   },
   {
-    title: "市場分析實習生",
+    title: "市場分析師",
     company: "The Economist Group: Clearstate",
     period: "2024年11月 - 2025年3月",
     location: "新加坡",
