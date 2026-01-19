@@ -957,7 +957,19 @@ export default function Portfolio() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showTabMenu, setShowTabMenu] = useState(false)
-  const [language, setLanguage] = useState<"en" | "zh">("en")
+  
+  // Auto-detect browser language on initial load
+  const [language, setLanguage] = useState<"en" | "zh">(() => {
+    if (typeof window !== "undefined") {
+      const browserLang = navigator.language.toLowerCase()
+      // Check if browser language is Chinese (Traditional or Simplified)
+      if (browserLang.startsWith("zh")) {
+        return "zh"
+      }
+    }
+    return "en"
+  })
+  
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const isZh = language === "zh"
