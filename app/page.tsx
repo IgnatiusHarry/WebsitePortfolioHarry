@@ -1277,7 +1277,7 @@ export default function Portfolio() {
           src={withBase("/images/taiwan-cityscape.jpg")}
           alt="Taiwan cityscape"
           fill
-          className="object-cover"
+          className={`object-cover transition-opacity duration-500 ${isDark ? "opacity-100" : "opacity-25"}`}
           priority
           quality={75}
         />
@@ -1295,10 +1295,10 @@ export default function Portfolio() {
         </>
       ) : (
         <>
-          {/* Light mode - ultra smooth blend */}
-          <div className="fixed inset-0 bg-gradient-to-b from-white/20 via-sky-50/30 via-sky-50/35 via-slate-50/40 via-slate-50/45 to-white/50 pointer-events-none" />
-          {/* Top accent */}
-          <div className="fixed top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-sky-100/15 via-sky-100/10 via-sky-50/5 to-transparent pointer-events-none" />
+          {/* Light mode - clean white with subtle veil over the photo */}
+          <div className="fixed inset-0 bg-white pointer-events-none" />
+          <div className="fixed inset-0 bg-gradient-to-b from-white/95 via-white/92 to-white/90 pointer-events-none" />
+          <div className="fixed top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-sky-100/12 via-sky-50/8 to-transparent pointer-events-none" />
         </>
       )}
 
