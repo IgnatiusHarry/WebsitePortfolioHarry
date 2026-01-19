@@ -1,5 +1,6 @@
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ""
-const assetPrefix = basePath ? `${basePath}/` : ""
+const normalizeBasePath = (path = "") => path.replace(/\/+$/, "")
+const basePath = normalizeBasePath(process.env.NEXT_PUBLIC_BASE_PATH || "")
+const assetPrefix = basePath || undefined
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
