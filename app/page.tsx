@@ -18,6 +18,8 @@ import {
   Volume2,
   VolumeX,
   Settings,
+  Menu,
+  X,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -728,13 +730,16 @@ const skillLogoMap: { [key: string]: string } = {
   "Illustrator": "ailogo.png",
 }
 
-function SkillIcon({ name, isDark }: { name: string; isDark: boolean }) {
+function SkillIcon({ name, isDark, isLarge = false }: { name: string; isDark: boolean; isLarge?: boolean }) {
   const logoFile = skillLogoMap[name]
+  const sizeClass = isLarge ? "w-24 h-24" : "w-12 h-12"
+  const textSizeClass = isLarge ? "text-lg" : "text-sm"
+  const hoverScale = isLarge ? "hover:scale-105" : "hover:scale-110"
 
   if (logoFile) {
     return (
       <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 relative"
+        className={`${sizeClass} rounded-xl flex items-center justify-center p-2 transition-all duration-300 ${hoverScale} relative flex-shrink-0`}
         title={name}
       >
         <Image
@@ -783,7 +788,7 @@ function SkillIcon({ name, isDark }: { name: string; isDark: boolean }) {
 
   return (
     <div
-      className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold border ${getColor(name)} transition-all duration-300 hover:scale-110`}
+      className={`${sizeClass} rounded-xl flex items-center justify-center ${textSizeClass} font-bold border ${getColor(name)} transition-all duration-300 ${hoverScale} flex-shrink-0`}
       title={name}
     >
       {getInitials(name)}
@@ -957,6 +962,8 @@ export default function Portfolio() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showTabMenu, setShowTabMenu] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   
   // Auto-detect browser language on initial load
   const [language, setLanguage] = useState<"en" | "zh">(() => {
@@ -974,6 +981,15 @@ export default function Portfolio() {
 
   const isZh = language === "zh"
   const t = (en: string, zh: string) => (isZh ? zh : en)
+
+  // Scroll detection for sticky navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   useEffect(() => {
     // Initialize audio
@@ -1036,6 +1052,225 @@ export default function Portfolio() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? "bg-slate-950 text-white" : "bg-gradient-to-b from-sky-100 via-slate-50 to-white text-slate-900"}`}>
+      <style>{`
+        @keyframes scrollLeft {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        
+        .carousel-scroll {
+          animation: scrollLeft 30s linear infinite;
+        }
+        
+        .carousel-container:hover .carousel-scroll {
+          animation-play-state: paused;
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes pulse-glow {
+          0%, 100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 0.6;
+          }
+        }
+
+        @keyframes rotate-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .animated-blob-1 {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animated-blob-2 {
+          animation: float 8s ease-in-out infinite 1s;
+        }
+
+        .animated-blob-3 {
+          animation: float 7s ease-in-out infinite 2s;
+        }
+
+        .glow-pulse {
+          animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        .slow-rotate {
+          animation: rotate-slow 20s linear infinite;
+        }
+      `}</style>
+
+      {/* Animated Background */}
+      <div className={`fixed inset-0 -z-10 overflow-hidden ${isDark ? "bg-slate-950" : "bg-gradient-to-br from-sky-50 to-white"}`}>
+        {/* Dark mode animated blobs */}
+        {isDark && (
+          <>
+            <div className="absolute animated-blob-1 top-20 left-10 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
+            <div className="absolute animated-blob-2 top-40 right-20 w-96 h-96 bg-violet-500/15 rounded-full blur-3xl" />
+            <div className="absolute animated-blob-3 bottom-32 left-1/2 w-72 h-72 bg-sky-400/10 rounded-full blur-3xl" />
+            <div className="absolute glow-pulse bottom-20 right-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-2xl" />
+          </>
+        )}
+        
+        {/* Light mode animated blobs */}
+        {!isDark && (
+          <>
+            <div className="absolute animated-blob-1 top-10 left-20 w-72 h-72 bg-sky-300/30 rounded-full blur-3xl" />
+            <div className="absolute animated-blob-2 top-32 right-10 w-80 h-80 bg-sky-200/25 rounded-full blur-3xl" />
+            <div className="absolute animated-blob-3 bottom-40 left-1/3 w-64 h-64 bg-blue-300/20 rounded-full blur-2xl" />
+            <div className="absolute glow-pulse -bottom-20 right-1/3 w-96 h-96 bg-sky-300/15 rounded-full blur-3xl" />
+          </>
+        )}
+      </div>
+      {/* Sticky Navigation Bar */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        isScrolled 
+          ? isDark 
+            ? "bg-slate-900/98 backdrop-blur-xl shadow-2xl border-b border-slate-800/50" 
+            : "bg-white/98 backdrop-blur-xl shadow-2xl border-b border-slate-200/50"
+          : "bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-transparent backdrop-blur-sm"
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo/Name */}
+            <a 
+              href="#home" 
+              className={`text-xl font-bold transition-all duration-300 ${
+                isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700"
+              }`}
+            >
+              Ignatius Harry
+            </a>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#home" className={`transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-900 hover:text-sky-600"}`}>
+                {t("Home", "首頁")}
+              </a>
+              <a href="#about" className={`transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-900 hover:text-sky-600"}`}>
+                {t("About", "關於")}
+              </a>
+              <a href="#skills" className={`transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-900 hover:text-sky-600"}`}>
+                {t("Skills", "技能")}
+              </a>
+              <a href="#projects" className={`transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-900 hover:text-sky-600"}`}>
+                {t("Projects", "專案")}
+              </a>
+              <a href="#contact" className={`transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-900 hover:text-sky-600"}`}>
+                {t("Contact", "聯絡")}
+              </a>
+              
+              {/* Language Toggle */}
+              <button
+                onClick={() => setLanguage(isZh ? "en" : "zh")}
+                className={`px-3 py-2 rounded-lg transition-all font-medium ${
+                  isDark 
+                    ? "bg-slate-800 hover:bg-slate-700 text-slate-300" 
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+                aria-label={isZh ? "Switch to English" : "切換為繁體中文"}
+              >
+                {isZh ? "EN" : "中"}
+              </button>
+              
+              <a 
+                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
+                download
+                className={`px-4 py-2 rounded-full font-medium transition-all ${
+                  isDark 
+                    ? "bg-sky-500 hover:bg-sky-400 text-white" 
+                    : "bg-sky-500 hover:bg-sky-600 text-white"
+                }`}
+              >
+                {t("Download CV", "下載履歷")}
+              </a>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className={`md:hidden p-2 rounded-lg transition-colors ${
+                isDark ? "hover:bg-slate-800" : "hover:bg-slate-100"
+              }`}
+              aria-label="Toggle menu"
+            >
+              {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {showMobileMenu && (
+            <div className={`md:hidden mt-4 pb-4 space-y-3 animate-in slide-in-from-top-2 duration-200 ${
+              isDark ? "border-t border-slate-800 pt-4" : "border-t border-slate-200 pt-4"
+            }`}>
+              <a 
+                href="#home" 
+                onClick={() => setShowMobileMenu(false)}
+                className={`block py-2 transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"}`}
+              >
+                {t("Home", "首頁")}
+              </a>
+              <a 
+                href="#about" 
+                onClick={() => setShowMobileMenu(false)}
+                className={`block py-2 transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"}`}
+              >
+                {t("About", "關於")}
+              </a>
+              <a 
+                href="#skills" 
+                onClick={() => setShowMobileMenu(false)}
+                className={`block py-2 transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"}`}
+              >
+                {t("Skills", "技能")}
+              </a>
+              <a 
+                href="#projects" 
+                onClick={() => setShowMobileMenu(false)}
+                className={`block py-2 transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"}`}
+              >
+                {t("Projects", "專案")}
+              </a>
+              <a 
+                href="#contact" 
+                onClick={() => setShowMobileMenu(false)}
+                className={`block py-2 transition-colors ${isDark ? "text-slate-300 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"}`}
+              >
+                {t("Contact", "聯絡")}
+              </a>
+              <a 
+                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
+                download
+                onClick={() => setShowMobileMenu(false)}
+                className={`block text-center py-2 px-4 rounded-full font-medium ${
+                  isDark ? "bg-sky-500 hover:bg-sky-400 text-white" : "bg-sky-500 hover:bg-sky-600 text-white"
+                }`}
+              >
+                {t("Download CV", "下載履歷")}
+              </a>
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Background with Taiwan cityscape image */}
       <div className="fixed inset-0 pointer-events-none">
         <Image
@@ -1048,14 +1283,23 @@ export default function Portfolio() {
         />
       </div>
 
-      {/* Background gradient overlay */}
+      {/* Background gradient overlay - ultra seamless */}
       {isDark ? (
         <>
-          <div className="fixed inset-0 bg-gradient-to-b from-slate-900/70 via-slate-950/80 to-slate-950/90 pointer-events-none" />
-          <div className="fixed top-0 left-0 right-0 h-96 bg-gradient-to-b from-sky-900/20 to-transparent pointer-events-none" />
+          {/* Main gradient with multiple smooth stops */}
+          <div className="fixed inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/60 via-slate-950/70 via-slate-950/80 via-slate-950/90 to-slate-950 pointer-events-none" />
+          {/* Top accent gradient - softer blend */}
+          <div className="fixed top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-sky-900/12 via-sky-900/8 via-sky-900/4 to-transparent pointer-events-none" />
+          {/* Bottom solid anchor */}
+          <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent pointer-events-none" />
         </>
       ) : (
-        <div className="fixed inset-0 bg-gradient-to-b from-white/40 via-sky-50/50 to-white/70 pointer-events-none" />
+        <>
+          {/* Light mode - ultra smooth blend */}
+          <div className="fixed inset-0 bg-gradient-to-b from-white/20 via-sky-50/30 via-sky-50/35 via-slate-50/40 via-slate-50/45 to-white/50 pointer-events-none" />
+          {/* Top accent */}
+          <div className="fixed top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-sky-100/15 via-sky-100/10 via-sky-50/5 to-transparent pointer-events-none" />
+        </>
       )}
 
       {/* Settings Toggle Button */}
@@ -1102,7 +1346,7 @@ export default function Portfolio() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex items-center justify-center px-6 py-20">
+      <section id="home" className="relative z-10 min-h-screen flex items-center justify-center px-6 py-20 pt-28">
         {/* Radial gradient glow effect */}
         <div className="absolute inset-0 overflow-hidden">
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] ${isDark ? "bg-gradient-radial from-sky-900/30 via-slate-900/50 to-transparent" : "bg-gradient-radial from-sky-200/50 via-transparent to-transparent"} rounded-full blur-3xl`} />
@@ -1136,7 +1380,7 @@ export default function Portfolio() {
             </h1>
 
             {/* Tagline */}
-            <h2 className={`text-xl md:text-2xl ${isDark ? "text-slate-400" : "text-slate-600"} font-medium`}>
+            <h2 className={`text-xl md:text-2xl ${isDark ? "text-slate-400" : "text-slate-800"} font-medium`}>
             </h2>
 
             {/* Typing text animation */}
@@ -1146,7 +1390,7 @@ export default function Portfolio() {
             />
 
             {/* Description */}
-            <p className={`text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? "text-slate-300" : "text-slate-700"} px-4`}>
+            <p className={`text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? "text-slate-300" : "text-slate-800"} px-4`}>
               {t(
                 "Data Analyst & Data Engineer with experience across Indonesia, Taiwan, and Singapore in E-commerce, Healthcare, and Insurance. Specialized in financial market analysis, ETL pipelines, SQL & Python analytics, machine learning, and econometrics.",
                 "資料分析師與資料工程師，具備印尼、台灣、新加坡的電商、醫療、保險經驗。專長金融市場分析、ETL/ELT 管線、SQL 與 Python 分析、機器學習與計量經濟。"
@@ -1179,7 +1423,7 @@ export default function Portfolio() {
                 href="https://github.com/IgnatiusHarry"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-400 hover:text-sky-600"} transition-colors`}
+                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
                 aria-label="GitHub"
               >
                 <Github className="w-6 h-6" />
@@ -1188,7 +1432,7 @@ export default function Portfolio() {
                 href="https://www.linkedin.com/in/ignatiusharry/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-400 hover:text-sky-600"} transition-colors`}
+                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-6 h-6" />
@@ -1197,14 +1441,14 @@ export default function Portfolio() {
                 href="https://www.instagram.com/ignatius_harry/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-400 hover:text-sky-600"} transition-colors`}
+                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
                 aria-label="Instagram"
               >
                 <Instagram className="w-6 h-6" />
               </a>
               <a
                 href="mailto:ignatiusharry14@gmail.com"
-                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-400 hover:text-sky-600"} transition-colors`}
+                className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
                 aria-label="Email"
               >
                 <Mail className="w-6 h-6" />
@@ -1215,7 +1459,7 @@ export default function Portfolio() {
       </section>
 
       {/* About Me Introduction with Photo */}
-      <section className="relative z-10 py-24 px-6">
+      <section id="about" className="relative z-10 py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
@@ -1225,7 +1469,7 @@ export default function Portfolio() {
                 <span className={`hidden sm:inline-block w-32 h-0.5 ${isDark ? "bg-slate-700" : "bg-slate-300"} ml-4 align-middle`} />
               </h2>
 
-              <div className={`space-y-4 text-sm sm:text-base ${isDark ? "text-slate-400" : "text-slate-600"} leading-relaxed`}>
+              <div className={`space-y-4 text-sm sm:text-base ${isDark ? "text-slate-400" : "text-slate-800"} leading-relaxed`}>
                 <p>
                   {t(
                     "Hi! My name is Harry. I'm a Data Analyst with experience across Taiwan, Singapore, and Indonesia.",
@@ -1315,7 +1559,7 @@ export default function Portfolio() {
       </section>
 
       {/* About Me Tabs Section */}
-      <section id="about-tabs" className="relative z-10 py-24 px-6">
+      <section id="skills" className="relative z-10 py-24 px-6">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12 px-4">
@@ -1403,11 +1647,20 @@ export default function Portfolio() {
             {/* Skills Tab */}
             {activeTab === "skills" && (
               <div className="animate-in fade-in duration-500">
-                {/* Skills Icons Grid */}
-                <div className="flex flex-wrap justify-center gap-3 mb-12">
-                  {skillsDataLocalized.icons.map((skill, index) => (
-                    <SkillIcon key={index} name={skill} isDark={isDark} />
-                  ))}
+                {/* Skills Icons Carousel */}
+                <div className="mb-12 overflow-hidden">
+                  <div className="carousel-container">
+                    <div className="carousel-scroll flex gap-3">
+                      {/* First set of icons */}
+                      {skillsDataLocalized.icons.map((skill, index) => (
+                        <SkillIcon key={`first-${index}`} name={skill} isDark={isDark} />
+                      ))}
+                      {/* Duplicate for seamless loop */}
+                      {skillsDataLocalized.icons.map((skill, index) => (
+                        <SkillIcon key={`second-${index}`} name={skill} isDark={isDark} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Skills Categories */}
@@ -1519,7 +1772,7 @@ export default function Portfolio() {
             {projectsDataLocalized.map((project, index) => (
               <div
                 key={index}
-                className={`${isDark ? "bg-slate-800/50 border-slate-700/50 hover:border-sky-500/30" : "bg-white border-slate-200 hover:border-sky-300 shadow-sm"} border rounded-2xl overflow-hidden transition-all duration-300 group`}
+                className={`${isDark ? "bg-slate-800/50 border-slate-700/50 hover:border-sky-500/30 hover:shadow-2xl hover:shadow-sky-500/20" : "bg-white border-slate-200 hover:border-sky-300 shadow-sm hover:shadow-lg"} border rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-105 hover:-translate-y-1`}
               >
                 <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
                   {project.image ? (
@@ -1527,19 +1780,19 @@ export default function Portfolio() {
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${project.gradient} flex items-center justify-center`}
+                      className={`absolute inset-0 bg-gradient-to-br ${project.gradient} flex items-center justify-center transition-transform duration-500 group-hover:scale-110`}
                     >
-                      <span className="text-4xl sm:text-6xl">{project.icon}</span>
+                      <span className="text-4xl sm:text-6xl transition-transform duration-500 group-hover:scale-125">{project.icon}</span>
                     </div>
                   )}
                 </div>
                 <div className="p-4 sm:p-6">
-                  <h3 className={`text-lg sm:text-xl font-semibold ${isDark ? "text-white" : "text-slate-900"} mb-2 break-words`}>{project.title}</h3>
-                  <p className={`${isDark ? "text-slate-400" : "text-slate-600"} text-xs sm:text-sm mb-4 leading-relaxed`}>{project.description}</p>
+                  <h3 className={`text-lg sm:text-xl font-semibold ${isDark ? "text-white" : "text-slate-900"} mb-2 break-words transition-colors duration-300 group-hover:${isDark ? "text-sky-400" : "text-sky-600"}`}>{project.title}</h3>
+                  <p className={`${isDark ? "text-slate-400" : "text-slate-600"} text-xs sm:text-sm mb-4 leading-relaxed transition-colors duration-300`}>{project.description}</p>
                   <div className="flex flex-wrap gap-2 sm:gap-3">
                     {project.links.map((link, linkIndex) => (
                       <a
@@ -1547,15 +1800,181 @@ export default function Portfolio() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`${isDark ? "text-sky-400" : "text-sky-600"} hover:underline text-xs sm:text-sm flex items-center gap-1`}
+                        className={`${isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700"} hover:underline text-xs sm:text-sm flex items-center gap-1 transition-all duration-300`}
                       >
-                        {link.text} <ExternalLink className="w-3 h-3" />
+                        {link.text} <ExternalLink className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
                       </a>
                     ))}
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Get In Touch Section */}
+      <section className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${isDark ? "text-white" : "text-slate-900"}`}>
+              {t("Get In Touch", "保持聯繫")}
+            </h2>
+            <p className={`text-lg ${isDark ? "text-slate-400" : "text-slate-700"} max-w-2xl mx-auto`}>
+              {t(
+                "Have a project in mind or want to collaborate? Feel free to reach out. I'm always open to discussing new opportunities.",
+                "有專案想法或想合作？歡迎聯繫我。我隨時樂於討論新機會。"
+              )}
+            </p>
+          </div>
+
+          <div className={`grid md:grid-cols-2 gap-12 ${isDark ? "bg-slate-900/50 border border-slate-800" : "bg-white border border-slate-200"} rounded-3xl p-8 md:p-12`}>
+            {/* Left Column - Contact Information */}
+            <div className="space-y-8">
+              <h3 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
+                {t("Contact Information", "聯絡資訊")}
+              </h3>
+
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex gap-4">
+                  <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${isDark ? "bg-sky-500/20" : "bg-sky-100"}`}>
+                    <Mail className={`w-6 h-6 ${isDark ? "text-sky-400" : "text-sky-600"}`} />
+                  </div>
+                  <div>
+                    <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                      {t("Email", "電子郵件")}
+                    </p>
+                    <a href="mailto:ignatiusharry14@gmail.com" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                      ignatiusharry14@gmail.com
+                    </a>
+                  </div>
+                </div>
+
+                {/* LinkedIn */}
+                <div className="flex gap-4">
+                  <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${isDark ? "bg-sky-500/20" : "bg-sky-100"}`}>
+                    <Linkedin className={`w-6 h-6 ${isDark ? "text-sky-400" : "text-sky-600"}`} />
+                  </div>
+                  <div>
+                    <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                      LinkedIn
+                    </p>
+                    <a href="https://www.linkedin.com/in/ignatiusharry/" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                      {t("Visit my profile", "訪問我的個人資料")}
+                    </a>
+                  </div>
+                </div>
+
+                {/* GitHub */}
+                <div className="flex gap-4">
+                  <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${isDark ? "bg-sky-500/20" : "bg-sky-100"}`}>
+                    <Github className={`w-6 h-6 ${isDark ? "text-sky-400" : "text-sky-600"}`} />
+                  </div>
+                  <div>
+                    <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                      GitHub
+                    </p>
+                    <a href="https://github.com/IgnatiusHarry" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                      {t("Check my projects", "查看我的專案")}
+                    </a>
+                  </div>
+                </div>
+
+                {/* Instagram */}
+                <div className="flex gap-4">
+                  <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${isDark ? "bg-sky-500/20" : "bg-sky-100"}`}>
+                    <Instagram className={`w-6 h-6 ${isDark ? "text-sky-400" : "text-sky-600"}`} />
+                  </div>
+                  <div>
+                    <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                      Instagram
+                    </p>
+                    <a href="https://www.instagram.com/ignatius_harry/" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                      @ignatius_harry
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Contact Form */}
+            <div className="space-y-6">
+              <h3 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
+                {t("Send a Message", "傳送訊息")}
+              </h3>
+
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault()
+                alert(t("Thank you for your message! I'll get back to you soon.", "感謝您的訊息！我會盡快回覆。"))
+              }}>
+                {/* Name Input */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                    {t("Your Name", "您的名字")}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("Your Name", "您的名字")}
+                    className={`w-full px-4 py-3 rounded-lg border transition-all ${
+                      isDark
+                        ? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-sky-600 focus:outline-none"
+                    }`}
+                    required
+                  />
+                </div>
+
+                {/* Email Input */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                    {t("Your Email", "您的電子郵件")}
+                  </label>
+                  <input
+                    type="email"
+                    placeholder={t("your@email.com", "your@email.com")}
+                    className={`w-full px-4 py-3 rounded-lg border transition-all ${
+                      isDark
+                        ? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-sky-600 focus:outline-none"
+                    }`}
+                    required
+                  />
+                </div>
+
+                {/* Message Input */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                    {t("Your Message", "您的訊息")}
+                  </label>
+                  <textarea
+                    placeholder={t("Hello, I'd like to talk about...", "嗨，我想討論...")}
+                    rows={4}
+                    className={`w-full px-4 py-3 rounded-lg border transition-all resize-none ${
+                      isDark
+                        ? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-sky-600 focus:outline-none"
+                    }`}
+                    required
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className={`w-full px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                    isDark
+                      ? "bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white"
+                      : "bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white"
+                  }`}
+                >
+                  <span>{t("Send Message", "傳送訊息")}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
