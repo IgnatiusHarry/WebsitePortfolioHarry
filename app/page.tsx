@@ -506,6 +506,23 @@ const languagesDataZh = [
 
 const projectsData = [
   {
+    title: "WealthFolio",
+    description:
+      "Production-grade personal wealth intelligence platform built with Next.js, Supabase, and AI-assisted portfolio workflows for tracking holdings, cash flow, performance, fees, and investment insights in one dashboard.",
+    icon: "💼",
+    gradient: "from-sky-500/20 via-cyan-500/20 to-emerald-500/20",
+    links: [
+      {
+        text: "Live Demo",
+        url: "https://wealth.ignatiusharry.my.id",
+      },
+      {
+        text: "View Github",
+        url: "https://github.com/IgnatiusHarry/WealthFolio",
+      },
+    ],
+  },
+  {
     title: "Trump's Social Media & Bitcoin Analysis",
     description:
       "LLM-powered analysis studying the causal relationship between Trump's social media posts and Bitcoin returns during the 2024 U.S. Presidential Election.",
@@ -597,6 +614,23 @@ const projectsData = [
 ]
 
 const projectsDataZh = [
+  {
+    title: "WealthFolio",
+    description:
+      "以 Next.js、Supabase 與 AI 工作流程打造的個人財富智慧平台，整合持股、現金流、績效、費用與投資洞見於單一儀表板。",
+    icon: "💼",
+    gradient: "from-sky-500/20 via-cyan-500/20 to-emerald-500/20",
+    links: [
+      {
+        text: "查看網站",
+        url: "https://wealth.ignatiusharry.my.id",
+      },
+      {
+        text: "查看 Github",
+        url: "https://github.com/IgnatiusHarry/WealthFolio",
+      },
+    ],
+  },
   {
     title: "川普社群媒體與比特幣分析",
     description:
@@ -1153,11 +1187,25 @@ export default function Portfolio() {
             {/* Logo/Name */}
             <a 
               href="#home" 
-              className={`text-xl font-bold transition-all duration-300 ${
-                isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700"
-              }`}
+              className="group flex items-center gap-3"
+              aria-label="Ignatius Harry home"
             >
-              Ignatius Harry
+              <span
+                className={`flex h-10 w-10 items-center justify-center rounded-xl border text-lg font-bold transition-all duration-300 ${
+                  isDark
+                    ? "border-sky-400/40 bg-sky-500/10 text-sky-300 group-hover:border-sky-300 group-hover:bg-sky-500/20"
+                    : "border-sky-300 bg-sky-100 text-sky-700 group-hover:border-sky-500 group-hover:bg-sky-200"
+                }`}
+              >
+                H
+              </span>
+              <span
+                className={`text-sm font-semibold uppercase tracking-[0.35em] transition-all duration-300 ${
+                  isDark ? "text-slate-300 group-hover:text-sky-300" : "text-slate-700 group-hover:text-sky-700"
+                }`}
+              >
+                Harry
+              </span>
             </a>
 
             {/* Desktop Navigation */}
