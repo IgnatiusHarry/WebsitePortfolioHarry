@@ -10,6 +10,14 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'Ignatius Harry | Portfolio',
   description: 'Data Analyst & Computational Social Science Researcher with experience across Taiwan, Singapore, and Indonesia. Specialized in ETL/ELT pipelines, machine learning, NLP, and econometrics.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   viewport: {
     width: 'device-width',
     initialScale: 1,
