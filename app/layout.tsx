@@ -12,11 +12,9 @@ export const metadata: Metadata = {
   description: 'Data Analyst & Computational Social Science Researcher with experience across Taiwan, Singapore, and Indonesia. Specialized in ETL/ELT pipelines, machine learning, NLP, and econometrics.',
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.svg?v=20260524h', type: 'image/svg+xml' },
     ],
-    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+    apple: [{ url: '/apple-icon.png?v=20260524h', sizes: '180x180', type: 'image/png' }],
   },
   viewport: {
     width: 'device-width',
