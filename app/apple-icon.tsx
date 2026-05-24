@@ -14,7 +14,7 @@ export default function AppleIcon() {
       <div
         style={{
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 100%)',
+          background: 'linear-gradient(135deg, #0b1020 0%, #4f46e5 55%, #22d3ee 100%)',
           display: 'flex',
           height: '100%',
           justifyContent: 'center',

@@ -14,7 +14,7 @@ export default function Icon() {
       <div
         style={{
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #0f172a 0%, #0369a1 55%, #38bdf8 100%)',
+          background: 'linear-gradient(135deg, #0b1020 0%, #4f46e5 55%, #22d3ee 100%)',
           display: 'flex',
           height: '100%',
           justifyContent: 'center',
