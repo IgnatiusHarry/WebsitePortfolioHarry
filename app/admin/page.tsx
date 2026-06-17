@@ -5,7 +5,7 @@ import Link from "next/link"
 import { CheckCircle2, FolderPen, Languages, LogOut, Plus, RefreshCcw, Save, Trash2 } from "lucide-react"
 
 type Lang = "en" | "zh"
-type EditorTab = "content" | "projects"
+type EditorTab = "content" | "projects" | "files"
 
 type TextList = string[]
 
@@ -121,10 +121,20 @@ type FileResponse = {
   error?: string
   ok?: boolean
   content?: string
+  path?: string
+  size?: number | string
+  updatedAt?: string
+  files?: EditableFileMeta[]
 }
 
 type SessionResponse = {
   authenticated?: boolean
+}
+
+type EditableFileMeta = {
+  path: string
+  size: string
+  updatedAt: string
 }
 
 const LOGIN_KEY = "portfolio-admin-unlocked"
@@ -632,12 +642,14 @@ function Field({
   onChange,
   placeholder,
   rows = 1,
+  disabled = false,
 }: {
   label: string
   value: string
   onChange: (value: string) => void
   placeholder?: string
   rows?: number
+  disabled?: boolean
 }) {
   return (
     <label className="space-y-2 block">
@@ -648,14 +660,16 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           rows={rows}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none focus:border-sky-500"
+          disabled={disabled}
+          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none focus:border-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
         />
       ) : (
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none focus:border-sky-500"
+          disabled={disabled}
+          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none focus:border-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
         />
       )}
     </label>
@@ -774,6 +788,7 @@ function SectionTabs({
   const tabs: { id: EditorTab; label: string }[] = [
     { id: "content", label: "Site content" },
     { id: "projects", label: "Projects" },
+    { id: "files", label: "Public files" },
   ]
 
   return (
@@ -806,6 +821,13 @@ export default function AdminPage() {
   const [language, setLanguage] = useState<Lang>("en")
   const [siteDraft, setSiteDraft] = useState<SiteOverridesDraft>(blankSiteDraft)
   const [projectsDraft, setProjectsDraft] = useState<ProjectsOverridesDraft>(blankProjectsDraft)
+  const [editableFiles, setEditableFiles] = useState<EditableFileMeta[]>([])
+  const [selectedFilePath, setSelectedFilePath] = useState(SITE_CONTENT_PATH)
+  const [selectedFileContent, setSelectedFileContent] = useState("")
+  const [selectedFileUpdatedAt, setSelectedFileUpdatedAt] = useState("")
+  const [selectedFileSize, setSelectedFileSize] = useState("")
+  const [loadingSelectedFile, setLoadingSelectedFile] = useState(false)
+  const [savingSelectedFile, setSavingSelectedFile] = useState(false)
 
   const currentSite = siteDraft[language]
   const currentProjects = projectsDraft[language]
@@ -818,6 +840,42 @@ export default function AdminPage() {
     return `${count} collection items loaded`
   }, [currentSite])
 
+  const loadSelectedFile = async (path: string) => {
+    setLoadingSelectedFile(true)
+    try {
+      const response = await fetch(`/api/admin/file?path=${encodeURIComponent(path)}`, { cache: "no-store" })
+      const data = (await response.json()) as FileResponse
+      if (!response.ok || typeof data.content !== "string") {
+        throw new Error(data.error || `Gagal memuat ${path}`)
+      }
+
+      setSelectedFilePath(path)
+      setSelectedFileContent(data.content)
+      setSelectedFileUpdatedAt(String(data.updatedAt ?? ""))
+      setSelectedFileSize(String(data.size ?? ""))
+    } finally {
+      setLoadingSelectedFile(false)
+    }
+  }
+
+  const loadEditableFiles = async (preferredPath?: string) => {
+    const response = await fetch("/api/admin/files", { cache: "no-store" })
+    const data = (await response.json()) as FileResponse
+    if (!response.ok || !Array.isArray(data.files)) {
+      throw new Error(data.error || "Gagal memuat daftar file")
+    }
+
+    setEditableFiles(data.files)
+
+    const nextPath = preferredPath && data.files.some((file) => file.path === preferredPath)
+      ? preferredPath
+      : data.files.find((file) => file.path === selectedFilePath)?.path ?? data.files[0]?.path ?? SITE_CONTENT_PATH
+
+    if (nextPath) {
+      await loadSelectedFile(nextPath)
+    }
+  }
+
   const loadData = async () => {
     setLoading(true)
     setStatus("Loading editor data...")
@@ -828,6 +886,7 @@ export default function AdminPage() {
       ])
       setSiteDraft(normalizeSiteDraft(siteResponse))
       setProjectsDraft(normalizeProjectsDraft(projectsResponse))
+      await loadEditableFiles()
       setStatus("Loaded editor data")
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error))
@@ -927,6 +986,29 @@ export default function AdminPage() {
       setStatus(error instanceof Error ? error.message : String(error))
     } finally {
       setSavingProjects(false)
+    }
+  }
+
+  const saveSelectedFile = async () => {
+    setSavingSelectedFile(true)
+    setStatus(`Saving ${selectedFilePath}...`)
+    try {
+      const response = await fetch("/api/admin/file", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: selectedFilePath, content: selectedFileContent }),
+      })
+      const data = (await response.json()) as FileResponse
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || `Gagal menyimpan ${selectedFilePath}`)
+      }
+
+      await loadEditableFiles(selectedFilePath)
+      setStatus(`Saved ${selectedFilePath}`)
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : String(error))
+    } finally {
+      setSavingSelectedFile(false)
     }
   }
 
@@ -1222,7 +1304,7 @@ export default function AdminPage() {
               <Field label="Caption" value={currentSite.footer.caption} onChange={(value) => setSiteDraft((current) => ({ ...current, [language]: { ...current[language], footer: { ...current[language].footer, caption: value } } }))} rows={3} />
             </CardShell>
           </div>
-        ) : (
+        ) : activeTab === "projects" ? (
           <div className="space-y-6">
             <CardShell
               title={`Projects · ${language.toUpperCase()}`}
@@ -1276,29 +1358,113 @@ export default function AdminPage() {
               <p className="mt-1">Kalau kamu kosongkan semua field di sebuah section, save akan menulis null/empty override supaya homepage kembali pakai fallback default.</p>
             </div>
           </div>
+        ) : (
+          <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
+            <CardShell
+              title="Editable public files"
+              subtitle="Semua file teks di public/ yang aman diedit lewat admin"
+              actions={
+                <button
+                  type="button"
+                  onClick={() => void loadEditableFiles(selectedFilePath)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white"
+                >
+                  <RefreshCcw className="h-4 w-4" />
+                  Refresh files
+                </button>
+              }
+            >
+              <div className="space-y-3 max-h-[720px] overflow-auto pr-1">
+                {editableFiles.map((file) => {
+                  const selected = file.path === selectedFilePath
+                  return (
+                    <button
+                      key={file.path}
+                      type="button"
+                      onClick={() => void loadSelectedFile(file.path)}
+                      className={`w-full rounded-2xl border px-4 py-3 text-left transition-colors ${selected ? "border-sky-500 bg-sky-500/10" : "border-slate-800 bg-slate-950/40 hover:border-slate-600"}`}
+                    >
+                      <p className="text-sm font-semibold text-white break-all">{file.path}</p>
+                      <p className="mt-2 text-xs text-slate-400">{file.size} · {new Date(file.updatedAt).toLocaleString()}</p>
+                    </button>
+                  )
+                })}
+              </div>
+            </CardShell>
+
+            <CardShell
+              title={selectedFilePath}
+              subtitle="Edit file publik langsung. Cocok untuk JSON override, text file, dan aset teks lain yang dipublish ke GitHub Pages."
+              actions={
+                <button
+                  type="button"
+                  onClick={saveSelectedFile}
+                  disabled={savingSelectedFile || loadingSelectedFile || !selectedFilePath}
+                  className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Save className="h-4 w-4" />
+                  {savingSelectedFile ? "Saving..." : "Save file"}
+                </button>
+              }
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="File path" value={selectedFilePath} onChange={() => {}} disabled />
+                <Field label="Last updated" value={selectedFileUpdatedAt} onChange={() => {}} disabled />
+              </div>
+              <Field label="Size" value={selectedFileSize} onChange={() => {}} disabled />
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">File content</span>
+                <textarea
+                  value={selectedFileContent}
+                  onChange={(event) => setSelectedFileContent(event.target.value)}
+                  spellCheck={false}
+                  rows={26}
+                  className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-mono outline-none focus:border-sky-500"
+                />
+              </label>
+              <p className="text-sm text-slate-400">
+                {loadingSelectedFile ? "Loading file..." : "Gunakan tab ini untuk file publik lain di luar form utama, misalnya JSON tambahan, TXT, YAML, atau CSS kecil di public/."}
+              </p>
+            </CardShell>
+          </div>
         )}
 
         <div className="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
           <p className="text-sm text-slate-400">{status}</p>
           <div className="flex gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={saveContent}
-              disabled={savingContent}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white disabled:opacity-60 inline-flex items-center gap-2"
-            >
-              <Save className="h-4 w-4" />
-              Save content
-            </button>
-            <button
-              type="button"
-              onClick={saveProjects}
-              disabled={savingProjects}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white disabled:opacity-60 inline-flex items-center gap-2"
-            >
-              <Save className="h-4 w-4" />
-              Save projects
-            </button>
+            {activeTab === "content" && (
+              <button
+                type="button"
+                onClick={saveContent}
+                disabled={savingContent}
+                className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white disabled:opacity-60 inline-flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Save content
+              </button>
+            )}
+            {activeTab === "projects" && (
+              <button
+                type="button"
+                onClick={saveProjects}
+                disabled={savingProjects}
+                className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white disabled:opacity-60 inline-flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Save projects
+              </button>
+            )}
+            {activeTab === "files" && (
+              <button
+                type="button"
+                onClick={saveSelectedFile}
+                disabled={savingSelectedFile || loadingSelectedFile || !selectedFilePath}
+                className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-sky-500 hover:text-white disabled:opacity-60 inline-flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Save file
+              </button>
+            )}
           </div>
         </div>
       </div>
