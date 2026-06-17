@@ -6,7 +6,15 @@
       <stop offset="100%" stop-color="#22d3ee"/>
     </linearGradient>
   </defs>
+
   <rect width="180" height="180" rx="37" fill="url(#bg)"/>
   <rect x="28" y="28" width="124" height="124" rx="30" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="6"/>
-  <text x="90" y="122" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="-6" fill="#f8fafc">H</text>
+
+  <text x="90" y="122"
+        text-anchor="middle"
+        font-family="Inter, Arial, sans-serif"
+        font-size="92"
+        font-weight="800"
+        letter-spacing="-6"
+        fill="#f8fafc">H</text>
 </svg>
