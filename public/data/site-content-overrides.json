@@ -1,0 +1,28 @@
+{
+  "en": {
+    "hero": null,
+    "about": null,
+    "tabs": null,
+    "skills": null,
+    "experience": null,
+    "education": null,
+    "certifications": null,
+    "languages": null,
+    "projects": null,
+    "contact": null,
+    "footer": null
+  },
+  "zh": {
+    "hero": null,
+    "about": null,
+    "tabs": null,
+    "skills": null,
+    "experience": null,
+    "education": null,
+    "certifications": null,
+    "languages": null,
+    "projects": null,
+    "contact": null,
+    "footer": null
+  }
+}

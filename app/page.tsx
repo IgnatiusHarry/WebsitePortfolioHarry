@@ -1013,6 +1013,7 @@ export default function Portfolio() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [projectOverrides, setProjectOverrides] = useState<{ en?: typeof projectsData; zh?: typeof projectsDataZh } | null>(null)
+  const [siteContentOverrides, setSiteContentOverrides] = useState<Record<string, any> | null>(null)
   const [githubMetaByRepo, setGithubMetaByRepo] = useState<
     Record<string, { stars: number; updatedAt: string; latestRelease: string | null }>
   >({})
@@ -1059,12 +1060,34 @@ export default function Portfolio() {
       })
   }, [])
 
-  const skillsDataLocalized = isZh ? skillsDataZh : skillsData
-  const experienceDataLocalized = isZh ? experienceDataZh : experienceData
-  const educationDataLocalized = isZh ? educationDataZh : educationData
-  const certificationsDataLocalized = isZh ? certificationsDataZh : certificationsData
-  const languagesDataLocalized = isZh ? languagesDataZh : languagesData
-  const projectsDataLocalized = projectOverrides?.[language] ?? (isZh ? projectsDataZh : projectsData)
+  useEffect(() => {
+    fetch(withBase("/data/site-content-overrides.json"), { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return null
+        return response.json()
+      })
+      .then((data) => {
+        if (data && typeof data === "object") {
+          setSiteContentOverrides(data as Record<string, any>)
+        }
+      })
+      .catch(() => {
+        // Keep fallback data if the override file is missing or invalid.
+      })
+  }, [])
+
+  const content = siteContentOverrides?.[language] ?? {}
+  const heroContent = content.hero ?? {}
+  const aboutContent = content.about ?? {}
+  const contactContent = content.contact ?? {}
+  const footerContent = content.footer ?? {}
+
+  const skillsDataLocalized = content.skills ?? (isZh ? skillsDataZh : skillsData)
+  const experienceDataLocalized = content.experience ?? (isZh ? experienceDataZh : experienceData)
+  const educationDataLocalized = content.education ?? (isZh ? educationDataZh : educationData)
+  const certificationsDataLocalized = content.certifications ?? (isZh ? certificationsDataZh : certificationsData)
+  const languagesDataLocalized = content.languages ?? (isZh ? languagesDataZh : languagesData)
+  const projectsDataLocalized = content.projects ?? projectOverrides?.[language] ?? (isZh ? projectsDataZh : projectsData)
 
   const getGithubRepo = (project: { links?: { url: string }[] }) => {
     const githubLink = project.links?.find((link) => /github\.com/i.test(link.url))
@@ -1116,19 +1139,21 @@ export default function Portfolio() {
       cancelled = true
     }
   }, [projectsDataLocalized])
-  const typingPhrases = isZh
-    ? [
-        "打造資料管線與智慧模型",
-        "把數據轉成商業洞見",
-        "應用型機器學習與 NLP",
-        "以數據為本的研究，創造影響",
-      ]
-    : [
-        "Building Data Pipelines & Intelligent Models",
-        "Turning Data into Business Insights",
-        "Applied Machine Learning & NLP",
-        "Data-Driven Research for Real-World Impact",
-      ]
+  const typingPhrases = heroContent.typingPhrases ?? (
+    isZh
+      ? [
+          "打造資料管線與智慧模型",
+          "把數據轉成商業洞見",
+          "應用型機器學習與 NLP",
+          "以數據為本的研究，創造影響",
+        ]
+      : [
+          "Building Data Pipelines & Intelligent Models",
+          "Turning Data into Business Insights",
+          "Applied Machine Learning & NLP",
+          "Data-Driven Research for Real-World Impact",
+        ]
+  )
 
   const toggleMusic = () => {
     if (audioRef.current) {
@@ -1148,12 +1173,48 @@ export default function Portfolio() {
   }
 
   const tabs: { id: TabType; label: string }[] = [
-    { id: "skills", label: t("Skills", "技能") },
-    { id: "experience", label: t("Experience", "經驗") },
-    { id: "education", label: t("Education", "學歷") },
-    { id: "certifications", label: t("Certifications", "證照") },
-    { id: "language", label: t("Language", "語言") },
+    { id: "skills", label: content.tabs?.skills ?? t("Skills", "技能") },
+    { id: "experience", label: content.tabs?.experience ?? t("Experience", "經驗") },
+    { id: "education", label: content.tabs?.education ?? t("Education", "學歷") },
+    { id: "certifications", label: content.tabs?.certifications ?? t("Certifications", "證照") },
+    { id: "language", label: content.tabs?.language ?? t("Language", "語言") },
   ]
+
+  const heroGreeting = heroContent.greeting ?? t("Hello(); I'm", "Hello(); 我是")
+  const heroNameFirst = heroContent.nameFirst ?? "Ignatius"
+  const heroNameLast = heroContent.nameLast ?? " Harry"
+  const heroDescription = heroContent.description ?? t(
+    "Data Analyst & Data Engineer with experience across Indonesia, Taiwan, and Singapore in E-commerce, Healthcare, and Insurance. Specialized in financial market analysis, ETL pipelines, SQL & Python analytics, machine learning, and econometrics.",
+    "資料分析師與資料工程師，具備印尼、台灣、新加坡的電商、醫療、保險經驗。專長金融市場分析、ETL/ELT 管線、SQL 與 Python 分析、機器學習與計量經濟。"
+  )
+  const heroCtaTalk = heroContent.ctaTalk ?? t("Let's Talk!", "聯絡我")
+  const heroCtaDownload = heroContent.ctaDownload ?? t("Download CV!", "下載履歷")
+  const aboutSummary = aboutContent.summary ?? t(
+    "Driven by extreme curiosity with the help of LLM to answer my questions about certain things, I am able to learn new concepts quickly and apply them to my work and projects.",
+    "我有強烈的好奇心，善用大型語言模型（LLM）快速找到答案，並把新概念運用到工作與專案中。"
+  )
+  const aboutParagraphs = aboutContent.paragraphs ?? [
+    t(
+      "Hi! My name is Harry. I'm a Data Analyst with experience across Taiwan, Singapore, and Indonesia.",
+      "嗨！我是 Harry，一位在台灣、新加坡、印尼都有經驗的資料分析師。"
+    ),
+    t(
+      "Specialized in sentiment analysis, machine learning, NLP, and econometrics to transform complex data into actionable insights.",
+      "專長情感分析、機器學習、自然語言處理與計量經濟，把複雜數據轉成可行洞見。"
+    ),
+    t(
+      "My research focuses on business & econometrics applications, including market analysis, consumer behavior, and policy evaluation. I excel at using data to tell compelling stories that drive strategic decisions.",
+      "研究重點是商業與計量經濟應用，涵蓋市場分析、消費行為、政策評估；擅長用數據講故事，支持決策。"
+    ),
+  ]
+  const footerQuote = footerContent.quote ?? '"熟能生巧！"'
+  const footerCaption = footerContent.caption ?? t("Practice makes perfect!", "熟能生巧！")
+  const contactEmail = contactContent.email ?? "ignatiusharry14@gmail.com"
+  const contactEmailHref = contactContent.emailHref ?? `mailto:${contactContent.email ?? "ignatiusharry14@gmail.com"}`
+  const contactLinkedIn = contactContent.linkedin ?? "https://www.linkedin.com/in/ignatiusharry/"
+  const contactGitHub = contactContent.github ?? "https://github.com/IgnatiusHarry"
+  const contactInstagram = contactContent.instagram ?? "https://www.instagram.com/ignatius_harry/"
+  const contactFormAction = contactContent.formAction ?? "https://formspree.io/f/xreekpgb"
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? "bg-slate-950 text-white" : "bg-gradient-to-b from-sky-100 via-slate-50 to-white text-slate-900"}`}>
@@ -1486,7 +1547,7 @@ export default function Portfolio() {
           <div className="space-y-6">
             {/* Hello greeting */}
             <p className={`font-mono ${isDark ? "text-sky-400" : "text-sky-600"} text-lg tracking-wide`}>
-              <AnimatedText text={t("Hello(); I'm", "Hello(); 我是")}
+              <AnimatedText text={heroGreeting}
               />
             </p>
 
@@ -1494,14 +1555,14 @@ export default function Portfolio() {
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
               <span className="block md:inline">
                 <AnimatedText
-                  text="Ignatius"
+                  text={heroNameFirst}
                   className={isDark ? "text-white" : "text-slate-900"}
                   baseDelay={200}
                 />
               </span>
               <span className="block md:inline">
                 <AnimatedText
-                  text=" Harry"
+                  text={heroNameLast}
                   className={isDark ? "text-sky-400" : "text-sky-600"}
                   baseDelay={700}
                 />
@@ -1520,20 +1581,17 @@ export default function Portfolio() {
 
             {/* Description */}
             <p className={`text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? "text-slate-300" : "text-slate-800"} px-4`}>
-              {t(
-                "Data Analyst & Data Engineer with experience across Indonesia, Taiwan, and Singapore in E-commerce, Healthcare, and Insurance. Specialized in financial market analysis, ETL pipelines, SQL & Python analytics, machine learning, and econometrics.",
-                "資料分析師與資料工程師，具備印尼、台灣、新加坡的電商、醫療、保險經驗。專長金融市場分析、ETL/ELT 管線、SQL 與 Python 分析、機器學習與計量經濟。"
-              )}
+              {heroDescription}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 px-4">
               <a
-                href="mailto:ignatiusharry14@gmail.com"
+                href={contactEmailHref}
                 className="relative px-6 sm:px-8 py-3 rounded-full font-medium text-white overflow-hidden group w-full sm:w-auto text-center"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-sky-500 via-sky-600 to-sky-500 bg-[length:200%_100%] animate-gradient-x" />
-                <span className="relative">{t("Let's Talk!", "聯絡我")}</span>
+                <span className="relative">{heroCtaTalk}</span>
               </a>
 
               <a
@@ -1542,14 +1600,14 @@ export default function Portfolio() {
                 className={`px-6 sm:px-8 py-3 rounded-full font-medium ${isDark ? "bg-white text-slate-900 hover:bg-slate-100" : "bg-slate-900 text-white hover:bg-slate-800"} transition-colors flex items-center justify-center gap-2 w-full sm:w-auto`}
               >
                 <Download className="w-4 h-4" />
-                {t("Download CV!", "下載履歷")}
+                {heroCtaDownload}
               </a>
             </div>
 
             {/* Social Icons */}
             <div className="flex justify-center gap-4 pt-4">
               <a
-                href="https://github.com/IgnatiusHarry"
+                href={contactGitHub}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
@@ -1558,7 +1616,7 @@ export default function Portfolio() {
                 <Github className="w-6 h-6" />
               </a>
               <a
-                href="https://www.linkedin.com/in/ignatiusharry/"
+                href={contactLinkedIn}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
@@ -1567,7 +1625,7 @@ export default function Portfolio() {
                 <Linkedin className="w-6 h-6" />
               </a>
               <a
-                href="https://www.instagram.com/ignatius_harry/"
+                href={contactInstagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
@@ -1576,7 +1634,7 @@ export default function Portfolio() {
                 <Instagram className="w-6 h-6" />
               </a>
               <a
-                href="mailto:ignatiusharry14@gmail.com"
+                href={contactEmailHref}
                 className={`${isDark ? "text-slate-500 hover:text-sky-400" : "text-slate-700 hover:text-sky-600"} transition-colors`}
                 aria-label="Email"
               >
@@ -1599,24 +1657,9 @@ export default function Portfolio() {
               </h2>
 
               <div className={`space-y-4 text-sm sm:text-base ${isDark ? "text-slate-400" : "text-slate-800"} leading-relaxed`}>
-                <p>
-                  {t(
-                    "Hi! My name is Harry. I'm a Data Analyst with experience across Taiwan, Singapore, and Indonesia.",
-                    "嗨！我是 Harry，一位在台灣、新加坡、印尼都有經驗的資料分析師。"
-                  )}
-                </p>
-                <p>
-                  {t(
-                    "Specialized in sentiment analysis, machine learning, NLP, and econometrics to transform complex data into actionable insights.",
-                    "專長情感分析、機器學習、自然語言處理與計量經濟，把複雜數據轉成可行洞見。"
-                  )}
-                </p>
-                <p>
-                  {t(
-                    "My research focuses on business & econometrics applications, including market analysis, consumer behavior, and policy evaluation. I excel at using data to tell compelling stories that drive strategic decisions.",
-                    "研究重點是商業與計量經濟應用，涵蓋市場分析、消費行為、政策評估；擅長用數據講故事，支持決策。"
-                  )}
-                </p>
+                {aboutParagraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
               </div>
 
               {/* Scroll down indicator */}
@@ -1648,7 +1691,7 @@ export default function Portfolio() {
               {/* Social links below photo */}
               <div className="flex gap-3">
                 <a
-                  href="https://github.com/IgnatiusHarry"
+                  href={contactGitHub}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:text-white hover:border-sky-500/50" : "bg-white border-slate-200 text-slate-500 hover:text-sky-600 hover:border-sky-300 shadow-sm"} border flex items-center justify-center transition-all`}
@@ -1657,7 +1700,7 @@ export default function Portfolio() {
                   <Github className="w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
                 <a
-                  href="https://www.linkedin.com/in/ignatiusharry/"
+                  href={contactLinkedIn}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:text-white hover:border-sky-500/50" : "bg-white border-slate-200 text-slate-500 hover:text-sky-600 hover:border-sky-300 shadow-sm"} border flex items-center justify-center transition-all`}
@@ -1666,7 +1709,7 @@ export default function Portfolio() {
                   <Linkedin className="w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
                 <a
-                  href="https://www.instagram.com/ignatius_harry/"
+                  href={contactInstagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:text-white hover:border-sky-500/50" : "bg-white border-slate-200 text-slate-500 hover:text-sky-600 hover:border-sky-300 shadow-sm"} border flex items-center justify-center transition-all`}
@@ -1675,7 +1718,7 @@ export default function Portfolio() {
                   <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
                 <a
-                  href="mailto:ignatiusharry14@gmail.com"
+                  href={contactEmailHref}
                   className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:text-white hover:border-sky-500/50" : "bg-white border-slate-200 text-slate-500 hover:text-sky-600 hover:border-sky-300 shadow-sm"} border flex items-center justify-center transition-all`}
                   aria-label="Email"
                 >
@@ -1697,10 +1740,7 @@ export default function Portfolio() {
               <span className={isDark ? "text-white" : "text-slate-900"}>{t("Me", "我")}</span>
             </h2>
             <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"} max-w-2xl mx-auto leading-relaxed text-balance`}>
-              {t(
-                "Driven by extreme curiosity with the help of LLM to answer my questions about certain things, I am able to learn new concepts quickly and apply them to my work and projects.",
-                "我有強烈的好奇心，善用大型語言模型（LLM）快速找到答案，並把新概念運用到工作與專案中。"
-              )}
+              {aboutSummary}
             </p>
           </div>
 
@@ -1985,8 +2025,8 @@ export default function Portfolio() {
                     <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
                       {t("Email", "電子郵件")}
                     </p>
-                    <a href="mailto:ignatiusharry14@gmail.com" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
-                      ignatiusharry14@gmail.com
+                    <a href={contactEmailHref} className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                      {contactEmail}
                     </a>
                   </div>
                 </div>
@@ -2000,7 +2040,7 @@ export default function Portfolio() {
                     <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
                       LinkedIn
                     </p>
-                    <a href="https://www.linkedin.com/in/ignatiusharry/" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                    <a href={contactLinkedIn} target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
                       {t("Visit my profile", "訪問我的個人資料")}
                     </a>
                   </div>
@@ -2015,7 +2055,7 @@ export default function Portfolio() {
                     <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
                       GitHub
                     </p>
-                    <a href="https://github.com/IgnatiusHarry" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                    <a href={contactGitHub} target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
                       {t("Check my projects", "查看我的專案")}
                     </a>
                   </div>
@@ -2030,7 +2070,7 @@ export default function Portfolio() {
                     <p className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
                       Instagram
                     </p>
-                    <a href="https://www.instagram.com/ignatius_harry/" target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
+                    <a href={contactInstagram} target="_blank" rel="noopener noreferrer" className={`${isDark ? "text-slate-400 hover:text-sky-400" : "text-slate-600 hover:text-sky-600"} transition-colors`}>
                       @ignatius_harry
                     </a>
                   </div>
@@ -2044,7 +2084,7 @@ export default function Portfolio() {
                 {t("Send a Message", "傳送訊息")}
               </h3>
 
-              <form action="https://formspree.io/f/xreekpgb" method="POST" className="space-y-4">
+              <form action={contactFormAction} method="POST" className="space-y-4">
                 {/* Name Input */}
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
@@ -2122,14 +2162,14 @@ export default function Portfolio() {
       {/* Footer */}
       <footer className={`relative z-10 py-16 px-6 border-t ${isDark ? "border-slate-800" : "border-slate-200"}`}>
         <div className="max-w-5xl mx-auto text-center">
-          <p className={`text-2xl font-bold ${isDark ? "text-sky-400" : "text-sky-600"} mb-6 italic`}>{'"熟能生巧！"'}</p>
+          <p className={`text-2xl font-bold ${isDark ? "text-sky-400" : "text-sky-600"} mb-6 italic`}>{footerQuote}</p>
           <p className={`${isDark ? "text-slate-500" : "text-slate-500"} mb-8`}>
-            {t("Practice makes perfect!", "熟能生巧！")}
+            {footerCaption}
           </p>
 
           <div className="flex justify-center gap-6 mb-8">
             <a
-              href="https://github.com/IgnatiusHarry"
+              href={contactGitHub}
               target="_blank"
               rel="noopener noreferrer"
               className={`${isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"} transition-colors`}
@@ -2138,7 +2178,7 @@ export default function Portfolio() {
               <Github className="w-6 h-6" />
             </a>
             <a
-              href="https://www.linkedin.com/in/ignatiusharry/"
+              href={contactLinkedIn}
               target="_blank"
               rel="noopener noreferrer"
               className={`${isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"} transition-colors`}
@@ -2147,7 +2187,7 @@ export default function Portfolio() {
               <Linkedin className="w-6 h-6" />
             </a>
             <a
-              href="https://www.instagram.com/ignatius_harry/"
+              href={contactInstagram}
               target="_blank"
               rel="noopener noreferrer"
               className={`${isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"} transition-colors`}
@@ -2156,7 +2196,7 @@ export default function Portfolio() {
               <Instagram className="w-6 h-6" />
             </a>
             <a
-              href="mailto:ignatiusharry14@gmail.com"
+              href={contactEmailHref}
               className={`${isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"} transition-colors`}
               aria-label="Email"
             >
