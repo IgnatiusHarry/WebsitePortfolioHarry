@@ -1012,6 +1012,10 @@ export default function Portfolio() {
   })
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [projectOverrides, setProjectOverrides] = useState<{ en?: typeof projectsData; zh?: typeof projectsDataZh } | null>(null)
+  const [githubMetaByRepo, setGithubMetaByRepo] = useState<
+    Record<string, { stars: number; updatedAt: string; latestRelease: string | null }>
+  >({})
 
   const isZh = language === "zh"
   const t = (en: string, zh: string) => (isZh ? zh : en)
@@ -1039,12 +1043,79 @@ export default function Portfolio() {
     }
   }, [])
 
+  useEffect(() => {
+    fetch(withBase("/data/projects-overrides.json"), { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return null
+        return response.json()
+      })
+      .then((data) => {
+        if (data && typeof data === "object") {
+          setProjectOverrides(data as { en?: typeof projectsData; zh?: typeof projectsDataZh })
+        }
+      })
+      .catch(() => {
+        // Keep fallback data if the override file is missing or invalid.
+      })
+  }, [])
+
   const skillsDataLocalized = isZh ? skillsDataZh : skillsData
   const experienceDataLocalized = isZh ? experienceDataZh : experienceData
   const educationDataLocalized = isZh ? educationDataZh : educationData
   const certificationsDataLocalized = isZh ? certificationsDataZh : certificationsData
   const languagesDataLocalized = isZh ? languagesDataZh : languagesData
-  const projectsDataLocalized = isZh ? projectsDataZh : projectsData
+  const projectsDataLocalized = projectOverrides?.[language] ?? (isZh ? projectsDataZh : projectsData)
+
+  const getGithubRepo = (project: { links?: { url: string }[] }) => {
+    const githubLink = project.links?.find((link) => /github\.com/i.test(link.url))
+    if (!githubLink) return null
+    const match = githubLink.url.match(/github\.com\/([^/]+)\/([^/#?]+)/i)
+    if (!match) return null
+    return `${match[1]}/${match[2].replace(/\.git$/, "")}`
+  }
+
+  useEffect(() => {
+    const repos = Array.from(new Set(projectsDataLocalized.map((project) => getGithubRepo(project)).filter(Boolean) as string[]))
+    if (!repos.length) return
+
+    let cancelled = false
+    const loadMeta = async () => {
+      const results = await Promise.all(
+        repos.map(async (repo) => {
+          try {
+            const response = await fetch(`https://api.github.com/repos/${repo}`, {
+              headers: { Accept: "application/vnd.github+json" },
+            })
+            if (!response.ok) return null
+            const data = await response.json()
+            return {
+              repo,
+              stars: Number(data.stargazers_count ?? 0),
+              updatedAt: String(data.updated_at ?? ""),
+              latestRelease: null as string | null,
+            }
+          } catch {
+            return null
+          }
+        })
+      )
+
+      if (!cancelled) {
+        setGithubMetaByRepo((current) => {
+          const next = { ...current }
+          for (const item of results) {
+            if (item) next[item.repo] = { stars: item.stars, updatedAt: item.updatedAt, latestRelease: item.latestRelease }
+          }
+          return next
+        })
+      }
+    }
+
+    void loadMeta()
+    return () => {
+      cancelled = true
+    }
+  }, [projectsDataLocalized])
   const typingPhrases = isZh
     ? [
         "打造資料管線與智慧模型",
@@ -1841,6 +1912,17 @@ export default function Portfolio() {
                 <div className="p-4 sm:p-6">
                   <h3 className={`text-lg sm:text-xl font-semibold ${isDark ? "text-white" : "text-slate-900"} mb-2 break-words transition-colors duration-300 group-hover:${isDark ? "text-sky-400" : "text-sky-600"}`}>{project.title}</h3>
                   <p className={`${isDark ? "text-slate-400" : "text-slate-600"} text-xs sm:text-sm mb-4 leading-relaxed transition-colors duration-300`}>{project.description}</p>
+                  {(() => {
+                    const repo = getGithubRepo(project)
+                    const meta = repo ? githubMetaByRepo[repo] : undefined
+                    return meta ? (
+                      <p className={`${isDark ? "text-slate-500" : "text-slate-500"} text-[11px] sm:text-xs mb-4`}>
+                        GitHub live sync · ★{meta.stars}
+                        {meta.latestRelease ? ` · release ${meta.latestRelease}` : ""}
+                        {meta.updatedAt ? ` · updated ${new Date(meta.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : ""}
+                      </p>
+                    ) : null
+                  })()}
                   <div className="flex flex-wrap gap-2 sm:gap-3">
                     {project.links.map((link, linkIndex) => (
                       <a
