@@ -124,6 +124,7 @@ type FileResponse = {
   path?: string
   size?: number | string
   updatedAt?: string
+  postSaveOutput?: string | null
   files?: EditableFileMeta[]
 }
 
@@ -960,7 +961,16 @@ export default function AdminPage() {
       if (!response.ok || !data.ok) {
         throw new Error(data.error || "Gagal menyimpan site content")
       }
-      setStatus(`Saved ${SITE_CONTENT_PATH}`)
+      const output = typeof data.postSaveOutput === "string" ? data.postSaveOutput : ""
+      const pushedMain = /Pushed source branch/i.test(output)
+      const publishedPages = /Published public content to/i.test(output)
+      if (pushedMain && publishedPages) {
+        setStatus(`Saved ${SITE_CONTENT_PATH} → pushed to main + published to GitHub Pages`)
+      } else if (publishedPages) {
+        setStatus(`Saved ${SITE_CONTENT_PATH} → published to GitHub Pages`)
+      } else {
+        setStatus(`Saved ${SITE_CONTENT_PATH}`)
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error))
     } finally {
@@ -981,7 +991,16 @@ export default function AdminPage() {
       if (!response.ok || !data.ok) {
         throw new Error(data.error || "Gagal menyimpan projects")
       }
-      setStatus(`Saved ${PROJECTS_PATH}`)
+      const output = typeof data.postSaveOutput === "string" ? data.postSaveOutput : ""
+      const pushedMain = /Pushed source branch/i.test(output)
+      const publishedPages = /Published public content to/i.test(output)
+      if (pushedMain && publishedPages) {
+        setStatus(`Saved ${PROJECTS_PATH} → pushed to main + published to GitHub Pages`)
+      } else if (publishedPages) {
+        setStatus(`Saved ${PROJECTS_PATH} → published to GitHub Pages`)
+      } else {
+        setStatus(`Saved ${PROJECTS_PATH}`)
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error))
     } finally {
@@ -1004,7 +1023,16 @@ export default function AdminPage() {
       }
 
       await loadEditableFiles(selectedFilePath)
-      setStatus(`Saved ${selectedFilePath}`)
+      const output = typeof data.postSaveOutput === "string" ? data.postSaveOutput : ""
+      const pushedMain = /Pushed source branch/i.test(output)
+      const publishedPages = /Published public content to/i.test(output)
+      if (pushedMain && publishedPages) {
+        setStatus(`Saved ${selectedFilePath} → pushed to main + published to GitHub Pages`)
+      } else if (publishedPages) {
+        setStatus(`Saved ${selectedFilePath} → published to GitHub Pages`)
+      } else {
+        setStatus(`Saved ${selectedFilePath}`)
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error))
     } finally {
