@@ -1,7 +1,7 @@
 {
   "en": [
     {
-      "title": "WealthFolio Harry",
+      "title": "WealthFolio",
       "description": "Production-grade personal wealth intelligence platform built with Next.js, Supabase, and AI-assisted portfolio workflows for tracking holdings, cash flow, performance, fees, and investment insights in one dashboard.",
       "icon": "💼",
       "gradient": "from-sky-500/20 via-cyan-500/20 to-emerald-500/20",
