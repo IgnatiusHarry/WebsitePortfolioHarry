@@ -1017,6 +1017,7 @@ export default function Portfolio() {
   const [githubMetaByRepo, setGithubMetaByRepo] = useState<
     Record<string, { stars: number; updatedAt: string; latestRelease: string | null }>
   >({})
+  const [githubWhitelistProjects, setGithubWhitelistProjects] = useState<typeof projectsData | null>(null)
 
   const isZh = language === "zh"
   const t = (en: string, zh: string) => (isZh ? zh : en)
@@ -1060,6 +1061,91 @@ export default function Portfolio() {
       })
   }, [])
 
+  // Fetch GitHub whitelist + merge with overrides
+  useEffect(() => {
+    const ICON_MAP: Record<string, string> = {
+      "Wealthfolio-Portfolio": "💼",
+      "Mandarin-AI-Learning-System": "🀄",
+      "Brand-Health-Case-Study-": "📊",
+      "Tourism-in-Indonesia": "🗺️",
+      "Analysis-of-Trump-s-Tweeting-Behavior-": "📊",
+      "Social-Capital-in-the-US": "📊",
+      "Taiwan-s-Political-Alignment-Analysis-": "📊",
+    }
+    const GRADIENT_MAP: Record<string, string> = {
+      "Wealthfolio-Portfolio": "from-sky-500/20 via-cyan-500/20 to-emerald-500/20",
+      "Mandarin-AI-Learning-System": "from-red-500/20 via-rose-500/20 to-orange-500/20",
+    }
+    const DEFAULT_GRADIENT = "from-sky-500/20 to-violet-500/20"
+
+    fetch(withBase("/data/github-whitelist.json"), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(async (whitelist: string[] | null) => {
+        if (!whitelist) return
+
+        // Fetch GitHub metadata for each whitelisted repo
+        const ghResults = await Promise.all(
+          whitelist.map(async (fullRepo) => {
+            try {
+              const r = await fetch(`https://api.github.com/repos/${fullRepo}`, {
+                headers: { Accept: "application/vnd.github+json" },
+              })
+              if (!r.ok) return null
+              const data = await r.json()
+              return { fullRepo, data }
+            } catch {
+              return null
+            }
+          })
+        )
+
+        // Build project list: override wins, fallback to GitHub data
+        const overridesEn = (projectOverrides?.en ?? []) as typeof projectsData
+        const overridesZh = (projectOverrides?.zh ?? []) as typeof projectsData
+
+        const overrideByRepo = (overrides: typeof projectsData) => {
+          const map: Record<string, (typeof projectsData)[0]> = {}
+          for (const p of overrides) {
+            const gh = p.links?.find((l) => /github\.com/i.test(l.url))
+            if (gh) {
+              const m = gh.url.match(/github\.com\/([^/]+)\/([^/#?]+)/i)
+              if (m) map[`${m[1]}/${m[2]}`] = p
+            }
+          }
+          return map
+        }
+
+        const enMap = overrideByRepo(overridesEn)
+        const zhMap = overrideByRepo(overridesZh)
+
+        const merged: typeof projectsData = []
+        for (const item of ghResults) {
+          if (!item) continue
+          const { fullRepo, data } = item
+          const repoName = fullRepo.split("/")[1]
+
+          // Check if override exists for this repo
+          const overrideEn = enMap[fullRepo]
+          if (overrideEn) {
+            merged.push(overrideEn)
+            continue
+          }
+
+          // Build from GitHub data
+          merged.push({
+            title: data.name?.replace(/-/g, " ").replace(/_/g, " ") ?? repoName,
+            description: data.description ?? "",
+            icon: ICON_MAP[repoName] ?? "📁",
+            gradient: GRADIENT_MAP[repoName] ?? DEFAULT_GRADIENT,
+            links: [{ text: "View Github", url: data.html_url }],
+          } as (typeof projectsData)[0])
+        }
+
+        setGithubWhitelistProjects(merged)
+      })
+      .catch(() => {})
+  }, [projectOverrides])
+
   useEffect(() => {
     fetch(withBase("/data/site-content-overrides.json"), { cache: "no-store" })
       .then(async (response) => {
@@ -1087,7 +1173,7 @@ export default function Portfolio() {
   const educationDataLocalized = content.education ?? (isZh ? educationDataZh : educationData)
   const certificationsDataLocalized = content.certifications ?? (isZh ? certificationsDataZh : certificationsData)
   const languagesDataLocalized = content.languages ?? (isZh ? languagesDataZh : languagesData)
-  const projectsDataLocalized = content.projects ?? projectOverrides?.[language] ?? (isZh ? projectsDataZh : projectsData)
+  const projectsDataLocalized = content.projects ?? githubWhitelistProjects ?? projectOverrides?.[language] ?? (isZh ? projectsDataZh : projectsData)
 
   const getGithubRepo = (project: { links?: { url: string }[] }) => {
     const githubLink = project.links?.find((link) => /github\.com/i.test(link.url))
