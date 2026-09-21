@@ -1066,6 +1066,7 @@ export default function Portfolio() {
     const ICON_MAP: Record<string, string> = {
       "Wealthfolio-Portfolio": "💼",
       "Mandarin-AI-Learning-System": "🀄",
+      "idx-bandarmology": "📈",
       "Brand-Health-Case-Study-": "📊",
       "Tourism-in-Indonesia": "🗺️",
       "Analysis-of-Trump-s-Tweeting-Behavior-": "📊",
