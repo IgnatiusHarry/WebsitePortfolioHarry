@@ -1459,16 +1459,6 @@ export default function Portfolio() {
               </button>
               
               <a 
-                href={withBase("/admin")}
-                className={`px-4 py-2 rounded-full font-medium transition-all border ${
-                  isDark 
-                    ? "border-slate-700 bg-slate-900/70 hover:bg-slate-800 text-slate-200" 
-                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                }`}
-              >
-                {t("Admin", "管理")}
-              </a>
-              <a 
                 href={withBase("/cv/Ignatius_Harry_CV.pdf")}
                 download
                 className={`px-4 py-2 rounded-full font-medium transition-all ${
