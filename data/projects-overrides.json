@@ -17,18 +17,16 @@
       ]
     },
     {
-      "title": "MandarinTutor",
-      "description": "AI-powered Mandarin learning platform featuring interactive lessons, real-time speech feedback, and adaptive quizzes — built with Next.js, Supabase, and a custom AI bridge for personalized tutoring at every level.",
+      "repo": "IgnatiusHarry/Mandarin-AI-Learning-System",
+      "title": "mandarintutor.my.id",
+      "description": "Platform online berbasis AI untuk belajar Mandarin: materi berbasis buku, PDF interaktif, audio, flashcards, kuis adaptif, latihan speaking, gamification, dan tutor AI yang menyesuaikan level serta progres belajar.",
       "icon": "🀄",
+      "image": "/images/mandarintutor-homepage.png",
       "gradient": "from-red-500/20 via-rose-500/20 to-orange-500/20",
       "links": [
         {
-          "text": "Live Demo",
+          "text": "Kunjungi Website",
           "url": "https://mandarintutor.my.id/"
-        },
-        {
-          "text": "View Github",
-          "url": "https://github.com/IgnatiusHarry/MandarinTutor"
         }
       ]
     },
@@ -136,18 +134,16 @@
       ]
     },
     {
-      "title": "MandarinTutor",
-      "description": "AI 驅動的中文學習平台，提供互動課程、即時語音回饋與自適應測驗，以 Next.js、Supabase 及自訂 AI 橋接打造個人化教學體驗。",
+      "repo": "IgnatiusHarry/Mandarin-AI-Learning-System",
+      "title": "mandarintutor.my.id",
+      "description": "AI 線上中文學習平台：以教材為主軸，結合互動 PDF、音訊、單字卡、自適應測驗、口說練習、遊戲化進度，以及會依程度與進度調整的 AI 家教。",
       "icon": "🀄",
+      "image": "/images/mandarintutor-homepage.png",
       "gradient": "from-red-500/20 via-rose-500/20 to-orange-500/20",
       "links": [
         {
-          "text": "查看網站",
+          "text": "前往網站",
           "url": "https://mandarintutor.my.id/"
-        },
-        {
-          "text": "查看 Github",
-          "url": "https://github.com/IgnatiusHarry/MandarinTutor"
         }
       ]
     },
