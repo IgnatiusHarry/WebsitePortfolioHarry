@@ -14,36 +14,33 @@
           "text": "View Github",
           "url": "https://github.com/IgnatiusHarry/Wealthfolio-Portfolio"
         }
-      ]
+      ],
+      "image": "/images/wealthfolio.png"
     },
     {
       "repo": "IgnatiusHarry/Mandarin-AI-Learning-System",
       "title": "mandarintutor.my.id",
-      "description": "Platform online berbasis AI untuk belajar Mandarin: materi berbasis buku, PDF interaktif, audio, flashcards, kuis adaptif, latihan speaking, gamification, dan tutor AI yang menyesuaikan level serta progres belajar.",
+      "description": "An AI-powered online platform for learning Mandarin with book-based lessons, interactive PDFs, audio practice, flashcards, adaptive quizzes, speaking exercises, gamified progress, and a personalized AI tutor.",
       "icon": "🀄",
       "image": "/images/mandarintutor-homepage.png",
       "gradient": "from-red-500/20 via-rose-500/20 to-orange-500/20",
       "links": [
         {
-          "text": "Kunjungi Website",
+          "text": "Visit Website",
           "url": "https://mandarintutor.my.id/"
         }
       ]
     },
     {
-      "title": "Trump's Social Media & Bitcoin Analysis",
-      "description": "LLM-powered analysis studying the causal relationship between Trump's social media posts and Bitcoin returns during the 2024 U.S. Presidential Election.",
-      "icon": "📊",
-      "image": "/images/trump-bitcoin-thesis.jpg",
-      "gradient": "from-sky-500/20 to-violet-500/20",
+      "title": "Master's Thesis: Trump's Social Media & Bitcoin Returns",
+      "description": "Harry's NCCU master's thesis studying the relationship between Trump's social media posts and Bitcoin returns during the 2024 U.S. Presidential Election using large language model analysis.",
+      "icon": "🎓",
+      "image": "/images/tesis harry.png",
+      "gradient": "from-indigo-500/20 via-violet-500/20 to-sky-500/20",
       "links": [
         {
-          "text": "View PPT",
-          "url": "https://www.dropbox.com/scl/fi/mzxcjio5ec8snrzjskheu/Harry-s-Thesis.pdf?rlkey=k1ooxm8j2hjqlwxbqtb0rysy3&st=d15wboee&dl=0"
-        },
-        {
-          "text": "View Paper",
-          "url": "https://nccur.lib.nccu.edu.tw/handle/140.119/158548"
+          "text": "View Thesis",
+          "url": "https://thesis.lib.nccu.edu.tw/detail/ea105ef0b7e1d63fbdfebb63f4950617/?seq=6"
         }
       ]
     },
@@ -131,12 +128,13 @@
           "text": "查看 Github",
           "url": "https://github.com/IgnatiusHarry/Wealthfolio-Portfolio"
         }
-      ]
+      ],
+      "image": "/images/wealthfolio.png"
     },
     {
       "repo": "IgnatiusHarry/Mandarin-AI-Learning-System",
       "title": "mandarintutor.my.id",
-      "description": "AI 線上中文學習平台：以教材為主軸，結合互動 PDF、音訊、單字卡、自適應測驗、口說練習、遊戲化進度，以及會依程度與進度調整的 AI 家教。",
+      "description": "AI 線上中文學習平台，提供教材式課程、互動 PDF、音訊練習、單字卡、自適應測驗、口說訓練、遊戲化進度，以及個人化 AI 家教。",
       "icon": "🀄",
       "image": "/images/mandarintutor-homepage.png",
       "gradient": "from-red-500/20 via-rose-500/20 to-orange-500/20",
@@ -148,19 +146,15 @@
       ]
     },
     {
-      "title": "川普社群媒體與比特幣分析",
-      "description": "以 LLM 探討川普社群貼文與比特幣報酬的因果關係（2024 美國總統大選期間）。",
-      "icon": "📊",
-      "image": "/images/trump-bitcoin-thesis.jpg",
-      "gradient": "from-sky-500/20 to-violet-500/20",
+      "title": "碩士論文：川普社群媒體與比特幣報酬",
+      "description": "Harry 於國立政治大學完成的碩士論文，使用大型語言模型分析 2024 年美國總統大選期間，川普社群媒體貼文與比特幣報酬之間的關係。",
+      "icon": "🎓",
+      "image": "/images/tesis harry.png",
+      "gradient": "from-indigo-500/20 via-violet-500/20 to-sky-500/20",
       "links": [
         {
-          "text": "查看簡報",
-          "url": "https://www.dropbox.com/scl/fi/mzxcjio5ec8snrzjskheu/Harry-s-Thesis.pdf?rlkey=k1ooxm8j2hjqlwxbqtb0rysy3&st=d15wboee&dl=0"
-        },
-        {
           "text": "查看論文",
-          "url": "https://nccur.lib.nccu.edu.tw/handle/140.119/158548"
+          "url": "https://thesis.lib.nccu.edu.tw/detail/ea105ef0b7e1d63fbdfebb63f4950617/?seq=6"
         }
       ]
     },
