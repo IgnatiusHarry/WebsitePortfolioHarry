@@ -32,10 +32,38 @@
       ]
     },
     {
+      "repo": "IgnatiusHarry/idx-bandarmology",
+      "title": "IDX Bandarmology",
+      "description": "End-to-end data pipeline testing whether smart-money (bandar/foreign) accumulation predicts price moves in Indonesian stocks through data engineering, analytics, machine learning, and causal analysis.",
+      "icon": "📈",
+      "image": "/images/pipeline_flowchart.png",
+      "gradient": "from-emerald-500/20 via-cyan-500/20 to-sky-500/20",
+      "links": [
+        {
+          "text": "View Github",
+          "url": "https://github.com/IgnatiusHarry/idx-bandarmology"
+        }
+      ]
+    },
+    {
+      "repo": "IgnatiusHarry/Brand-Health-Case-Study-",
+      "title": "Brand Health Case Study",
+      "description": "NielsenIQ case study analyzing e-wallet survey data to assess brand performance and consumer habits, then translating the findings into SWOT insights and targeted marketing recommendations.",
+      "icon": "📊",
+      "image": "/images/nielsen.png",
+      "gradient": "from-indigo-500/20 via-blue-500/20 to-cyan-500/20",
+      "links": [
+        {
+          "text": "View Github",
+          "url": "https://github.com/IgnatiusHarry/Brand-Health-Case-Study-"
+        }
+      ]
+    },
+    {
       "title": "Master's Thesis: Trump's Social Media & Bitcoin Returns",
       "description": "Harry's NCCU master's thesis studying the relationship between Trump's social media posts and Bitcoin returns during the 2024 U.S. Presidential Election using large language model analysis.",
       "icon": "🎓",
-      "image": "/images/tesis harry.png",
+      "image": "/images/Master's Thesis: Trump's Social Media & Bitcoin Returns.png",
       "gradient": "from-indigo-500/20 via-violet-500/20 to-sky-500/20",
       "links": [
         {
@@ -79,6 +107,20 @@
         {
           "text": "Github",
           "url": "https://github.com/IgnatiusHarry/Tourism-in-Indonesia"
+        }
+      ]
+    },
+    {
+      "repo": "IgnatiusHarry/Analysis-of-Trump-s-Tweeting-Behavior-",
+      "title": "Analysis of Trump's Tweeting Behavior",
+      "description": "Exploratory data analysis of Donald Trump's tweets, comparing posting patterns and engagement differences by device source, especially iPhone versus Android behavior.",
+      "icon": "📊",
+      "image": "/images/trump.png",
+      "gradient": "from-red-500/20 via-orange-500/20 to-sky-500/20",
+      "links": [
+        {
+          "text": "View Github",
+          "url": "https://github.com/IgnatiusHarry/Analysis-of-Trump-s-Tweeting-Behavior-"
         }
       ]
     },
@@ -146,10 +188,38 @@
       ]
     },
     {
+      "repo": "IgnatiusHarry/idx-bandarmology",
+      "title": "IDX Bandarmology",
+      "description": "端到端資料管線，測試印尼股票市場中主力／外資籌碼累積是否能預測價格變動，涵蓋資料工程、分析、機器學習與因果檢驗。",
+      "icon": "📈",
+      "image": "/images/pipeline_flowchart.png",
+      "gradient": "from-emerald-500/20 via-cyan-500/20 to-sky-500/20",
+      "links": [
+        {
+          "text": "查看 Github",
+          "url": "https://github.com/IgnatiusHarry/idx-bandarmology"
+        }
+      ]
+    },
+    {
+      "repo": "IgnatiusHarry/Brand-Health-Case-Study-",
+      "title": "品牌健康度案例研究",
+      "description": "NielsenIQ 案例研究：分析電子錢包問卷資料以評估品牌表現與消費者習慣，並轉化為 SWOT 洞察與精準行銷建議。",
+      "icon": "📊",
+      "image": "/images/nielsen.png",
+      "gradient": "from-indigo-500/20 via-blue-500/20 to-cyan-500/20",
+      "links": [
+        {
+          "text": "查看 Github",
+          "url": "https://github.com/IgnatiusHarry/Brand-Health-Case-Study-"
+        }
+      ]
+    },
+    {
       "title": "碩士論文：川普社群媒體與比特幣報酬",
       "description": "Harry 於國立政治大學完成的碩士論文，使用大型語言模型分析 2024 年美國總統大選期間，川普社群媒體貼文與比特幣報酬之間的關係。",
       "icon": "🎓",
-      "image": "/images/tesis harry.png",
+      "image": "/images/Master's Thesis: Trump's Social Media & Bitcoin Returns.png",
       "gradient": "from-indigo-500/20 via-violet-500/20 to-sky-500/20",
       "links": [
         {
@@ -193,6 +263,20 @@
         {
           "text": "Github",
           "url": "https://github.com/IgnatiusHarry/Tourism-in-Indonesia"
+        }
+      ]
+    },
+    {
+      "repo": "IgnatiusHarry/Analysis-of-Trump-s-Tweeting-Behavior-",
+      "title": "川普推文行為分析",
+      "description": "分析 Donald Trump 推文資料，比較不同裝置來源（尤其 iPhone 與 Android）在發文時間、頻率與互動表現上的差異。",
+      "icon": "📊",
+      "image": "/images/trump.png",
+      "gradient": "from-red-500/20 via-orange-500/20 to-sky-500/20",
+      "links": [
+        {
+          "text": "查看 Github",
+          "url": "https://github.com/IgnatiusHarry/Analysis-of-Trump-s-Tweeting-Behavior-"
         }
       ]
     },
