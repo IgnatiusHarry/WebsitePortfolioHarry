@@ -1100,9 +1100,10 @@ export default function Portfolio() {
           })
         )
 
-        // Build project list: override wins, fallback to GitHub data
-        const overridesEn = (projectOverrides?.en ?? []) as typeof projectsData
-        const overridesZh = (projectOverrides?.zh ?? []) as typeof projectsData
+        // Build the localized project list: override wins, fallback to GitHub data.
+        // Overrides without a GitHub repo/link are appended as standalone portfolio cards.
+        const localizedOverrides = ((language === "zh" ? projectOverrides?.zh : projectOverrides?.en) ?? []) as typeof projectsData
+        const consumedOverrides = new Set<(typeof projectsData)[0]>()
 
         const overrideByRepo = (overrides: typeof projectsData) => {
           const map: Record<string, (typeof projectsData)[0]> = {}
@@ -1122,8 +1123,7 @@ export default function Portfolio() {
           return map
         }
 
-        const enMap = overrideByRepo(overridesEn)
-        const zhMap = overrideByRepo(overridesZh)
+        const overrideMap = overrideByRepo(localizedOverrides)
 
         const merged: typeof projectsData = []
         for (const item of ghResults) {
@@ -1132,9 +1132,10 @@ export default function Portfolio() {
           const repoName = fullRepo.split("/")[1]
 
           // Check if override exists for this repo
-          const overrideEn = enMap[fullRepo]
-          if (overrideEn) {
-            merged.push(overrideEn)
+          const override = overrideMap[fullRepo]
+          if (override) {
+            merged.push(override)
+            consumedOverrides.add(override)
             continue
           }
 
@@ -1144,14 +1145,18 @@ export default function Portfolio() {
             description: data.description ?? "",
             icon: ICON_MAP[repoName] ?? "📁",
             gradient: GRADIENT_MAP[repoName] ?? DEFAULT_GRADIENT,
-            links: [{ text: "View Github", url: data.html_url }],
+            links: [{ text: language === "zh" ? "查看 Github" : "View Github", url: data.html_url }],
           } as (typeof projectsData)[0])
+        }
+
+        for (const override of localizedOverrides) {
+          if (!consumedOverrides.has(override)) merged.push(override)
         }
 
         setGithubWhitelistProjects(merged)
       })
       .catch(() => {})
-  }, [projectOverrides])
+  }, [projectOverrides, language])
 
   useEffect(() => {
     fetch(withBase("/data/site-content-overrides.json"), { cache: "no-store" })
