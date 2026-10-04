@@ -1287,6 +1287,7 @@ export default function Portfolio() {
   )
   const heroCtaTalk = heroContent.ctaTalk ?? t("Let's Talk!", "聯絡我")
   const heroCtaDownload = heroContent.ctaDownload ?? t("Download CV!", "下載履歷")
+  const cvDriveUrl = "https://drive.google.com/drive/folders/17EeulHkxyFASUKay7tlclkFKVV0byTCX?usp=share_link"
   const aboutSummary = aboutContent.summary ?? t(
     "Driven by extreme curiosity with the help of LLM to answer my questions about certain things, I am able to learn new concepts quickly and apply them to my work and projects.",
     "我有強烈的好奇心，善用大型語言模型（LLM）快速找到答案，並把新概念運用到工作與專案中。"
@@ -1470,8 +1471,9 @@ export default function Portfolio() {
               </button>
               
               <a 
-                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
-                download
+                href={cvDriveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`px-4 py-2 rounded-full font-medium transition-all ${
                   isDark 
                     ? "bg-sky-500 hover:bg-sky-400 text-white" 
@@ -1535,8 +1537,9 @@ export default function Portfolio() {
                 {t("Contact", "聯絡")}
               </a>
               <a 
-                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
-                download
+                href={cvDriveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setShowMobileMenu(false)}
                 className={`block text-center py-2 px-4 rounded-full font-medium ${
                   isDark ? "bg-sky-500 hover:bg-sky-400 text-white" : "bg-sky-500 hover:bg-sky-600 text-white"
@@ -1683,8 +1686,9 @@ export default function Portfolio() {
               </a>
 
               <a
-                href={withBase("/cv/Ignatius_Harry_CV.pdf")}
-                download
+                href={cvDriveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`px-6 sm:px-8 py-3 rounded-full font-medium ${isDark ? "bg-white text-slate-900 hover:bg-slate-100" : "bg-slate-900 text-white hover:bg-slate-800"} transition-colors flex items-center justify-center gap-2 w-full sm:w-auto`}
               >
                 <Download className="w-4 h-4" />
@@ -2037,7 +2041,7 @@ export default function Portfolio() {
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="object-contain bg-white p-2 transition-transform duration-500"
                     />
                   ) : (
                     <div
