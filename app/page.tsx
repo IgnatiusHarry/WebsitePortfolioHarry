@@ -1107,6 +1107,12 @@ export default function Portfolio() {
         const overrideByRepo = (overrides: typeof projectsData) => {
           const map: Record<string, (typeof projectsData)[0]> = {}
           for (const p of overrides) {
+            const explicitRepo = (p as (typeof projectsData)[0] & { repo?: string }).repo
+            if (explicitRepo) {
+              map[explicitRepo] = p
+              continue
+            }
+
             const gh = p.links?.find((l) => /github\.com/i.test(l.url))
             if (gh) {
               const m = gh.url.match(/github\.com\/([^/]+)\/([^/#?]+)/i)
