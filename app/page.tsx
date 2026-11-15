@@ -1287,7 +1287,7 @@ export default function Portfolio() {
   )
   const heroCtaTalk = heroContent.ctaTalk ?? t("Let's Talk!", "聯絡我")
   const heroCtaDownload = heroContent.ctaDownload ?? t("Download CV!", "下載履歷")
-  const cvDriveUrl = "https://drive.google.com/drive/folders/17EeulHkxyFASUKay7tlclkFKVV0byTCX?usp=share_link"
+  const cvDriveUrl = "https://www.dropbox.com/scl/fo/sh1mqorybvdg58aqzfw8t/APRevZ-ZhUvh-XpkZ7kngPU?rlkey=e2eo0qhyz1iuvp68ertryeo27&st=oaa0y3f3&dl=0"
   const aboutSummary = aboutContent.summary ?? t(
     "Driven by extreme curiosity with the help of LLM to answer my questions about certain things, I am able to learn new concepts quickly and apply them to my work and projects.",
     "我有強烈的好奇心，善用大型語言模型（LLM）快速找到答案，並把新概念運用到工作與專案中。"
